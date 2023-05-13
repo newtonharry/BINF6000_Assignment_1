@@ -1,0 +1,19 @@
+[project]
+name = "sequence-analysis-and-phylogenetics"
+version = "0.1.0"
+description = "Add a short description here"
+authors = [
+    { name = "Harry Newton", email = "harryjnewton98@gmail.com" }
+]
+dependencies = ["numpy~=1.24.3", "matplotlib~=3.7.1", "requests~=2.30.0", "notebook~=7.0.0b2"]
+readme = "README.md"
+requires-python = ">= 3.8"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = ["ipykernel~=6.23.0"]
