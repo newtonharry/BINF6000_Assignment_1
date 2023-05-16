@@ -211,6 +211,10 @@ class Alignment():
                 # Now calculate the specified measure based on p
                 if measure == 'fractional':
                     dist = p
+                elif measure == 'poisson':
+                    dist = -math.log(1 - p) # Poisson distance 
+                elif measure == 'gamma':
+                    dist = a * ((1-p)**(-1/a) - 1) # Gamma distance
                 else:
                     raise RuntimeError('Not implemented: %s' % measure)
                 distmat[i, j] = distmat[j, i] = dist
