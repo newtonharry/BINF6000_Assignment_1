@@ -906,6 +906,14 @@ class PhyloTree:
             my_end = end or self.aln.alignlen
             return self.root._printSequences(my_start, my_end)
 
+    def strSites(self, columns=None):
+        """ Produce a sequence representation of the tree, specifically the root of the tree.
+            Specify column positions in the alignment for the sequence to be printed
+            (if None the range of the alignment will be used). """
+        if self.aln != None:
+            my_columns = columns or range(self.aln.alignlen)
+            return self.root._printSites(my_columns)
+
     def findLabel(self, label):
         """ Retrieve/return the node with the specified label.
             Returns None if not found."""
@@ -1015,17 +1023,18 @@ class PhyloNode:
             elif self.left and self.right:
                 return '(' + left + ',' + right + ')' + dist
 
-    def _printSequences(self, start, end):
+    def _printSites(self, columns):
         """ Returns string with node (incl descendants) in a Newick style. """
         left = right = label = dist = ''
         if self.left:
-            left = self.left._printSequences(start, end)
+            left = self.left._printSites(columns)
         if self.right:
-            right = self.right._printSequences(start, end)
+            right = self.right._printSites(columns)
         if self.dist:
             dist = ':' + str(self.dist)
         if self.sequence != None:
-            label = "".join(self.sequence[start:end]) + ""
+            # Generate the label as the concatenation of the residues in the columns that represent the active site
+            label = "".join([self.sequence[i] for i in columns]) + ""
             if not self.left and not self.right:
                 return label + dist
             else:
@@ -1037,6 +1046,30 @@ class PhyloNode:
                 return left + ','
             elif self.left and self.right:
                 return '(' + left + ',' + right + ')' + dist
+
+
+    def _printSequences(self, columns):
+            """ Returns string with node (incl descendants) in a Newick style. """
+            left = right = label = dist = ''
+            if self.left:
+                left = self.left._printSequences(start, end)
+            if self.right:
+                right = self.right._printSequences(start, end)
+            if self.dist:
+                dist = ':' + str(self.dist)
+            if self.sequence != None:
+                label = "".join(self.sequence[start:end]) + ""
+                if not self.left and not self.right:
+                    return label + dist
+                else:
+                    return '(' + left + ',' + right + ')' + label + dist
+            else:  # there is no label
+                if not self.left and self.right:
+                    return ',' + right
+                elif self.left and not self.right:
+                    return left + ','
+                elif self.left and self.right:
+                    return '(' + left + ',' + right + ')' + dist
 
     def _findLabel(self, label):
         """ Find a node by label at this node or in any descendants (recursively). """
@@ -1330,3 +1363,6 @@ def writeNewickFile(filename, tree):
     fh = open(filename, 'w')
     fh.write(tree.__str__())
     fh.close()
+
+
+                                
